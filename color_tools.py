@@ -9,19 +9,22 @@ def crop_to_color(img, b, g, r, x_offset=0, y_offset=0) -> np.ndarray:
     bottom_y = np.max(border[:, 1])
     img = img[top_y - y_offset:bottom_y, left_x - x_offset:right_x]
 
+    assert top_y != bottom_y
+    assert left_x != right_x
+
     return img
 
-def find_color(img, r, g=None, b=None):
-    color = r, g, b
-    if g is None:
-        color = r
+def find_color(img, b, g, r):
+    tol = np.array([5, 5, 5], dtype=np.uint8)  # B,G,R tolerance
+    center = np.array([b, g, r], dtype=np.uint8)
+    lower = np.clip(center - tol, 0, 255).astype(np.uint8)
+    upper = np.clip(center + tol, 0, 255).astype(np.uint8)
 
-    mask = cv.inRange(img, color, color)
+    mask = cv.inRange(img, lower, upper)
     coords = cv.findNonZero(mask)
 
     # Color needs to be present
-    if coords is None:
-        quit("Go to settings -> Default Skin: Apply")
+    assert coords is not None, "Go to settings -> Default Skin: Apply"
 
     return coords[:, 0]  # convert shape (N,1,2) → (N,2)
 

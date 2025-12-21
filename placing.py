@@ -1,8 +1,15 @@
 # Prints representation of grid
 def show_grid(grid:dict):
-    for y in range(8):
+    width = 0
+    height = 0
+
+    for x, y in grid.keys():
+        width = max(x + 1, width)
+        height = max(y + 1, height)
+
+    for y in range(height):
         row = ""
-        for x in range(8):
+        for x in range(width):
             if grid[x, y]: row += "⏹ "
             else: row += "• "
         print(row)
