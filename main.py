@@ -1,10 +1,9 @@
 import numpy as np
 from itertools import permutations
 
-from util import *
+from color_tools import *
 from placing import *
-from pieces import pieces
-from piece_finder import *
+from piece_finder import scan_pieces
 
 # Image
 img = cv.imread("bild.png")
@@ -17,7 +16,7 @@ right_x = np.max(border[:, 0])
 top_y = np.min(border[:, 1])
 bottom_y = np.max(border[:, 1])
 img = img[top_y:bottom_y, left_x:right_x]
-img = cv.resize(img, (512, 512))
+#img = cv.resize(img, (512, 512))
 
 # Construct digital representation
 grid = {}
@@ -38,11 +37,10 @@ for y in range(8):
 
 # Get pieces
 scanned_pieces = scan_pieces(pieces_img)
-quit()
 
 # Test every piece placement
 solutions = []
-for turn in permutations(pieces):
+for turn in permutations(scanned_pieces):
     piece1, piece2, piece3 = turn
 
     for grid1 in get_overlays(grid, piece1):
@@ -67,5 +65,5 @@ for i, sol in enumerate(solutions):
         best_sol_index = i
         best_sol_score = sol_score
 solution = solutions[best_sol_index]
-
-cv.waitKey(0)
+show_grid(solution[2][1])
+print(f"Blocks cleared: {best_sol_score}")

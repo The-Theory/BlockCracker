@@ -25,10 +25,9 @@ def find_color(img, r, g=None, b=None):
 
     return coords[:, 0]  # convert shape (N,1,2) → (N,2)
 
-def show_grid(grid:dict):
-    for y in range(8):
-        row = ""
-        for x in range(8):
-            if grid[x, y]: row += "⏹ "
-            else: row += "• "
-        print(row)
+def color_at(img, color, x, y):
+    for i in range(3):
+        if abs(img[y, x][i] - color[i]) < 10:
+            print(f"Did not find {color}, found {img[y, x]}")
+            return False
+    return True

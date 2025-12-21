@@ -1,17 +1,13 @@
-def process_piece(piece_str:str):
-    piece = {}
-    x = y = 0
+# Prints representation of grid
+def show_grid(grid:dict):
+    for y in range(8):
+        row = ""
+        for x in range(8):
+            if grid[x, y]: row += "⏹ "
+            else: row += "• "
+        print(row)
 
-    for line in piece_str:
-        for char in line:
-            if char == "\n": continue
-            piece[x, y] = char == "#"
-            x += 1
-        x = 0
-        y += 1
-    return len(piece_str[0]), len(piece_str), piece
-
-
+# Checks if a piece can be overlayed at position
 def can_overlay(bg: dict, mask: dict, x_offset: int = 0, y_offset: int = 0) -> bool:
     for x, y in mask.keys():
         new_x = x + x_offset
@@ -20,7 +16,7 @@ def can_overlay(bg: dict, mask: dict, x_offset: int = 0, y_offset: int = 0) -> b
 
     return True
 
-
+# Add adds a piece to a grid
 def overlay(bg: dict, mask: dict, offset) -> dict:
     result = bg.copy()
     for x, y in mask.keys():
@@ -33,22 +29,13 @@ def overlay(bg: dict, mask: dict, offset) -> dict:
     return result
 
 
-def get_overlays(bg: dict, piece: str):
-    overlays = []
-
-    width, height, mask = process_piece(piece)
-    for x in range(8 - width + 1):
-        for y in range(8 - height + 1):
-            if not can_overlay(bg, mask, x, y): continue
-            overlays.append(process_grid(overlay(bg, mask, (x, y))))
-    return overlays
-
-
+# Clears full rows and cols
 def process_grid(bg: dict) -> dict:
     result = {}
     rows = []
     cols = []
 
+    # Find full rows
     for row in range(0, 8):
         is_row_full = True
         for col in range(0, 8):
@@ -57,6 +44,8 @@ def process_grid(bg: dict) -> dict:
                 break
         if is_row_full:
             rows.append(row)
+
+    # Find full cols
     for col in range(0, 8):
         is_col_full = True
         for row in range(0, 8):
@@ -66,6 +55,7 @@ def process_grid(bg: dict) -> dict:
         if is_col_full:
             cols.append(col)
 
+    # Copy original, except those to be cleared
     for x in range(0, 8):
         for y in range(0, 8):
             if x in cols or y in rows:
@@ -73,3 +63,20 @@ def process_grid(bg: dict) -> dict:
             else:
                 result[x, y] = bg[x, y]
     return result
+
+
+# Gets all possible grids as a result of placing a piece in every position possible
+def get_overlays(bg: dict, piece: dict) -> list[dict]:
+    overlays = []
+    piece_width = 0
+    piece_height = 0
+
+    for x, y in piece.keys():
+        piece_width = max(x + 1, piece_width)
+        piece_height = max(y + 1, piece_height)
+
+    for x in range(8 - piece_width + 1):
+        for y in range(8 - piece_height + 1):
+            if not can_overlay(bg, piece, x, y): continue
+            overlays.append(process_grid(overlay(bg, piece, (x, y))))
+    return overlays
