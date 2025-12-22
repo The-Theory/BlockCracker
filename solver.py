@@ -5,7 +5,7 @@ from color_tools import *
 from placing import *
 from piece_finder import scan_pieces
 
-def solve_from_img(img: ndarray):
+def solve_from_img(img: ndarray, pieces_copy: list, print_pieces:bool=False) -> list[Placement]:
     # Image
     pieces_img = img.copy()
 
@@ -40,29 +40,30 @@ def solve_from_img(img: ndarray):
 
     # Get pieces
     scanned_pieces = scan_pieces(pieces_img)
-    print("Scanned pieces:")
-    for piece in scanned_pieces:
-        show_grid(piece)
-        print()
+    for p in scanned_pieces:
+        pieces_copy.append(p)
+    if print_pieces:
+        print("Scanned pieces:")
+        for piece in scanned_pieces:
+            show_grid(piece)
+            print()
 
     # Test every piece placement
     solutions = []
     for turn in permutations(scanned_pieces):
         piece1, piece2, piece3 = turn
 
-        for grid1 in get_overlays(grid, piece1):
-            for grid2 in get_overlays(grid1, piece2):
-                for grid3 in get_overlays(grid2, piece3):
-                    solutions.append(((piece1, grid1),
-                                      (piece2, grid2),
-                                      (piece3, grid3)))
+        for overlay1 in get_overlays(grid, piece1):
+            for overlay2 in get_overlays(overlay1.grid, piece2):
+                for overlay3 in get_overlays(overlay2.grid, piece3):
+                    solutions.append((overlay1, overlay2, overlay3))
 
     # Get best solution
     # Based on blocks cleared
     best_sol_index = 0
     best_sol_score = 0
     for i, sol in enumerate(solutions):
-        sol_grid = sol[2][1]
+        sol_grid = sol[2].grid
         sol_score = 0
         for x in range(8):
             for y in range(8):

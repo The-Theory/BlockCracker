@@ -15,7 +15,7 @@ def crop_to_color(img, b, g, r, x_offset=0, y_offset=0) -> np.ndarray:
     return img
 
 def find_color(img, b, g, r):
-    tol = np.array([5, 5, 5], dtype=np.uint8)  # B,G,R tolerance
+    tol = np.array([7, 7, 7], dtype=np.uint8)  # B,G,R tolerance
     center = np.array([b, g, r], dtype=np.uint8)
     lower = np.clip(center - tol, 0, 255).astype(np.uint8)
     upper = np.clip(center + tol, 0, 255).astype(np.uint8)

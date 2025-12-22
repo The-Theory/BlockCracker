@@ -27,11 +27,10 @@ def scan_pieces(img: np.ndarray):
 
     # Fix each img
     for i in range(3):
-
-        piece_imgs[i] = crop_to_color(piece_imgs[i], 118, 60, 46, x_offset=6, y_offset=6)
+        piece_imgs[i] = crop_to_color(piece_imgs[i], 119, 60, 46, x_offset=6, y_offset=6)
         # cv.imshow(f"Piece {i + 1}", piece_imgs[i])
-        piece_imgs[i] = piece_imgs[i][:, :]
     # cv.waitKey(0)
+    # quit()
 
     # Represent in dict
     for i, piece in enumerate(scanned_pieces):
