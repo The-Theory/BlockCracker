@@ -1,3 +1,4 @@
+import math
 import time
 
 import mss
@@ -8,7 +9,7 @@ import pyautogui as gui
 from solver import solve_from_img
 from placing import show_grid, Placement
 
-region = {"top": 100, "left": 10, "width": 380, "height": 700}
+region = {"top": 100, "left": 10, "width": 390, "height": 700}
 
 def print_solution(solution: list[Placement]):
     print(f"{"-" * 5} BEST* SOLUTION {"-" * 5} ")
@@ -30,16 +31,27 @@ def go_to_board(x: int, y: int):
     rel_x = target_x - mouse_x
     rel_y = target_y - mouse_y
 
-    print(rel_x, rel_y)
+    # rel_x /= 1.1
+    # rel_y /= 2
 
-    gui.dragRel(rel_x, rel_y, 1, button='left')
+    rel_x = (rel_x + 47) / 1.3
+    rel_y = (rel_y + 147)/1.30093
 
-piece_offset = 25
+    gui.dragRel(rel_x, rel_y, 0, button='left')
+
+piece_offset = 50
+piece_buffer = region["width"] * 0.15
+piece_area_width = region["width"] - piece_buffer * 2
+piece_y = region["height"] + piece_offset
 piece_positions = (
-    (region["width"]/3 - piece_offset, region["height"] + piece_offset),
-    (region["width"]*2/3 - piece_offset, region["height"] + piece_offset),
-    (region["width"] - piece_offset, region["height"] + piece_offset)
+    (piece_buffer + piece_offset/2, piece_y),
+    (region["width"]/2, piece_y),
+    (region["width"] - piece_buffer - piece_offset/2, piece_y)
 )
+
+# gui.moveTo(piece_positions[2])
+# go_to_board(0, 0)
+# quit()
 
 with mss.mss() as sct:
     while True:
@@ -50,7 +62,7 @@ with mss.mss() as sct:
         pieces_matrix = []
         sol = solve_from_img(frame, pieces_matrix)
         print_solution(sol)
-        move_order = [pieces_matrix.index(place.piece) for place in sol]
+        move_order = [place.piece_id for place in sol]
 
         gui.moveTo(region["width"]/2, region["height"]/2)
         gui.click()
@@ -62,4 +74,4 @@ with mss.mss() as sct:
             gui.moveTo(piece_positions[piece_index])
             go_to_board(move.x, move.y)
 
-        break
+        gui.moveTo(0, 0, duration=1)

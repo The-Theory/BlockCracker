@@ -47,6 +47,7 @@ def solve_from_img(img: ndarray, pieces_copy: list, print_pieces:bool=False) -> 
         for piece in scanned_pieces:
             show_grid(piece)
             print()
+    scanned_pieces = zip(scanned_pieces, (0, 1, 2))
 
     # Test every piece placement
     solutions = []
@@ -57,6 +58,7 @@ def solve_from_img(img: ndarray, pieces_copy: list, print_pieces:bool=False) -> 
             for overlay2 in get_overlays(overlay1.grid, piece2):
                 for overlay3 in get_overlays(overlay2.grid, piece3):
                     solutions.append((overlay1, overlay2, overlay3))
+
 
     # Get best solution
     # Based on blocks cleared

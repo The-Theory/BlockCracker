@@ -2,10 +2,11 @@ import pyautogui as gui
 import time, math, random
 
 class Placement:
-    def __init__(self, x, y, piece, grid):
+    def __init__(self, x: int, y: int, piece: dict, piece_id: int, grid: dict):
         self.x = x
         self.y = y
         self.piece = piece
+        self.piece_id = piece_id
         self.grid = grid
 
 # Prints representation of grid
@@ -83,10 +84,12 @@ def process_grid(bg: dict) -> dict:
 
 
 # Gets all possible grids as a result of placing a piece in every position possible
-def get_overlays(bg: dict, piece: dict) -> list[Placement]:
+def get_overlays(bg: dict, piece: tuple[dict, int]) -> list[Placement]:
     overlays = []
     piece_width = 0
     piece_height = 0
+
+    piece, piece_id = piece
 
     for x, y in piece.keys():
         piece_width = max(x + 1, piece_width)
@@ -96,5 +99,5 @@ def get_overlays(bg: dict, piece: dict) -> list[Placement]:
         for y in range(8 - piece_height + 1):
             if not can_overlay(bg, piece, x, y): continue
             complete_grid = process_grid(overlay(bg, piece, (x, y)))
-            overlays.append(Placement(x, y, piece, complete_grid))
+            overlays.append(Placement(x, y, piece, piece_id, complete_grid))
     return overlays
